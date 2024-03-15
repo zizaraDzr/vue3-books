@@ -1,22 +1,23 @@
 <script setup>
 import { computed } from 'vue'
-const $props = defineProps({
+const props = defineProps({
   modelValue: { type: Array, default: () => [] },
   filter: { type: String, default: '' }
 })
-const $emit = defineEmits(['edit', 'delete', 'toggle'])
+const emit = defineEmits(['edit', 'delete', 'toggle', 'editCellTable'])
 const _filteredList = computed(() => {
-  if ($props.filter) {
-    return $props.modelValue.filter((item) => {
-      return item.text.toUpperCase().includes($props.filter.toUpperCase())
+  if (props.filter) {
+    return props.modelValue.filter((item) => {
+      return item.text.toUpperCase().includes(props.filter.toUpperCase())
     })
   } else {
-    return $props.modelValue
+    return props.modelValue
   }
 })
 
-function emitEvent(event_name, payload) {
-  $emit(event_name, payload)
+
+function emitEvent(eventName, payload) {
+  emit(eventName, payload)
 }
 </script>
 
@@ -33,22 +34,16 @@ function emitEvent(event_name, payload) {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in _filteredList" :key="item.id">
-          <td class="clickable w3-hover-pale-blue" @click="emitEvent('toggle', item)">
-            <i
-              class="fa-solid fa-2x fa-square w3-text-light-gray"
-              v-if="item.status == 'not_started'"
-            ></i>
-            <i
-              class="fa-solid fa-2x fa-square-minus w3-text-teal"
-              v-if="item.status == 'in_progress'"
-            ></i>
-            <i
-              class="fa-solid fa-2x fa-square-check w3-text-green"
-              v-if="item.status == 'completed'"
-            ></i>
+        <tr v-for="item in _filteredList" :key="item.id" style="height: 1px;">
+          <td class="clickable w3-hover-pale-blue" @click="emitEvent('toggle', item)" style="height: inherit">
+            <div v-if="item.status == 'not_started'" style="background: #f1f1f1; width: 100%;height: 100%;"></div>
+            <div v-if="item.status == 'in_progress'" style="background: teal; width: 100%;height: 100%;"></div>
+            <div v-if="item.status == 'completed'" style="background: green; width: 100%;height: 100%;"></div>
           </td>
-          <td>{{ item.text }}</td>
+          <td  @dblclick="emitEvent('editCellTable', item)">
+            <span v-show="!item.isEditCell">{{ item.text }}</span>
+            <input @focus.stop="" v-show="item.isEditCell" type="text" v-model=" item.text" @keyup.enter="emitEvent('editCellTable', item)">
+          </td>
           <td class="w3-right-align">
             <span
               class="clickable w3-transparent w3-text-indigo w3-hover-text-blue w3-hover-white w3-margin-right"

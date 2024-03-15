@@ -1,43 +1,19 @@
 <script setup>
-import { ref } from "vue"
-import todoService from "../services/todo"
-import { onMounted } from 'vue'
+import todoService from '../services/todo'
 
-onMounted(() => {
-  console.log(`the component is now mounted. ${$props.modelValue.text}`)
-})
-const $props = defineProps({
-  modelValue: {
-    type: Object,
-    default: () => {
-      return {}
-    }
-  }
-})
-const $emit = defineEmits(["update:modelValue"])
-const copyModel = ref({})
-copyModel.value = { ...$props.modelValue }
-
-function emitUpdate() {
-    $emit("update:modelValue", copyModel.value)
-}
+const model = defineModel({ required: true, type: Object })
 </script>
 
 <template>
   <div class="w3-cell-row w3-padding">
     <div class="w3-cell w3-padding">
-      <strong>Description{{ $props }}</strong>
-      <input
-        type="text"
-        class="w3-input w3-border"
-        v-model="copyModel.text"
-        @input="emitUpdate()"
-      />
+      <strong>Description{{ model }}</strong>
+      <input type="text" class="w3-input w3-border" v-model="model.text" />
     </div>
 
     <div class="w3-cell w3-padding">
       <strong>Status</strong>
-      <select class="w3-select w3-border" v-model="copyModel.status" @change="emitUpdate()">
+      <select class="w3-select w3-border" v-model="model.status">
         <option v-for="state in todoService.getStatusList()" :key="state.id" :value="state.id">
           {{ state.label }}
         </option>

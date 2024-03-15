@@ -2,8 +2,8 @@
 import { ref, inject } from 'vue'
 import TodoItemForm from './ToDoItemForm.vue'
 import TodoList from './ToDoList.vue'
-// import TodoFilter from './ToDoFilter.vue'
-// import TodoSummary from './ToDoSummary.vue'
+import TodoFilter from './ToDoFilter.vue'
+import TodoSummary from './ToDoSummary.vue'
 import todoService from '../services/todo'
 
 const $modals = inject('$modals')
@@ -65,27 +65,33 @@ function getIndex(item) {
     return index
   }
 }
+function editCellTable(item) {
+  isEdit.value = true
+  item.isEditCell = todoService.toggleEditCell(item.isEditCell)
+}
 
 function toggleStatus(item) {
   item.status = todoService.toggleStatus(item.status)
 }
+
 </script>
 
 <template>
   <div class="project-container">
     <!-- Summary -->
-    <!-- <TodoSummary :items="items" class="w3-margin-bottom"></TodoSummary> -->
+    <TodoSummary :items="items" class="w3-margin-bottom"></TodoSummary>
 
     <!-- Filter bar -->
-    <!-- <div class="w3-margin-bottom">
+    <div class="w3-margin-bottom">
       <TodoFilter v-model="filter" class="flex-grow"></TodoFilter>
-    </div> -->
+    </div>
 
     <!-- Todo list -->
     <TodoList
       v-model="items"
       :filter="filter"
       @toggle="toggleStatus"
+      @editCellTable="editCellTable"
       @edit="showModal(false, $event)"
       @delete="deleteItem"
     >
